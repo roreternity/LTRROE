@@ -47,24 +47,6 @@ LTRROE/
 
 ---
 
-## Quick Start
-
-### For English Version:
-```bash
-cd ENG
-pip install matplotlib numpy
-python demo_ltrroe.py
-```
-
-### Для русской версии:
-```bash
-cd RUS
-pip install matplotlib numpy
-python demo_ltrroe.py
-```
-
----
-
 ## Project Overview
 
 LTRROE is a stochastic modeling system for project risk assessment that implements:
@@ -137,4 +119,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 *Research project in stochastic optimization and project risk analysis.*  
 *Developed for academic research applications.*
-```
+
