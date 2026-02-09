@@ -1,97 +1,121 @@
-# LTRROE v2.0 — Local Team Resource & Risk Optimization Engine
+# LTRROE Project Repository
 
-Intelligent decision support system for project risk management using probabilistic models and visualization.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Quick Start
+**LTRROE v2.0 — Local Team Resource & Risk Optimization Engine**  
+*Research project in stochastic project risk modeling*
 
-### Installation
-```bash
-git clone https://github.com/roreternity/LTRROE.git
-cd LTRROE
-pip install matplotlib numpy
-```
+---
 
-### Basic Usage
-```python
-from test_data import create_test_project
-from algorithmes import calculate_schedule, monte_carlo_simulation
-from visualisation import plot_gantt_chart
+## Repository Structure
 
-project = create_test_project()
-early_start, early_finish, _ = calculate_schedule(project)
-durations = monte_carlo_simulation(project, num_simulations=1000)
-plot_gantt_chart(project, early_start, early_finish)
-print(f"Average duration: {sum(durations)/len(durations):.1f} days")
-```
-
-## Features
-
-### Project Planning
-- Forward/Backward pass (CPM)
-- Task dependency management
-- Critical path identification
-
-### Risk Analysis
-- Monte Carlo simulation (1000+ iterations)
-- Triangular distribution (PERT)
-- Human factor modeling (skills, overload)
-
-### Visualization
-- Gantt charts with criticality coding
-- Monte Carlo distribution histograms
-- Skills radar charts
-- Employee workload heatmaps
-
-## Project Structure
 ```
 LTRROE/
-├── models.py              # Domain models
-├── test_data.py           # Test data 
-├── algorithmes.py         # Core algorithms
-├── visualisation.py       # Visualization module
-└── README.txt
+├── ENG/                    # English version (full implementation)
+│   ├── README.md          # Technical documentation (English)
+│   ├── README_ACADEMIC_ENG.md # Academic research description (English)
+│   ├── models.py          # Data models
+│   ├── algorithmes.py     # Core algorithms
+│   ├── visualisation.py   # Visualization module
+│   ├── test_data.py       # Test data generator
+│   └── demo_ltrroe.py     # Complete demonstration
+│
+├── RUS/                    # Russian version (for academic submission)
+│   ├── README.md          # Техническая документация (русский)
+│   ├── README_ACADEMIC_RUS.md  # Академическое описание (русский)
+│   ├── models.py          # Модели данных
+│   ├── algorithmes.py     # Основные алгоритмы
+│   ├── visualisation.py   # Модуль визуализации
+│   ├── test_data.py       # Генератор тестовых данных
+│   └── demo_ltrroe.py     # Полная демонстрация
+│
+├── DOCS/                  # Documentation and research papers
+│   ├── research_paper.pdf      # Academic paper (bilingual)
+│   ├── presentation.pdf        # Research presentation
+│   └── mathematical_model.pdf  # Formal model specification
+│
+├── EXAMPLES/              # Generated example outputs
+│   ├── gantt_chart.png
+│   ├── monte_carlo_histogram.png
+│   ├── employee_load_heatmap.png
+│   └── skills_radar_chart.png
+│
+├── LICENSE               # MIT License
+└── README.md            # This file
 ```
 
-## Example Output
-```
-Monte Carlo Simulation (1000 iterations):
-Average: 37.2 days
-Risk of missing 30-day deadline: 100.0%
+---
 
-Employee Load Analysis:
-Alexey Seniorov: avg 12.5h/day - ⚠️ OVERLOAD
-Maria Middlova: avg 6.1h/day - ✅ OK
-```
+## Project Overview
 
-## Core API
-```python
-# Schedule calculation
-early_start, early_finish, task_duration = calculate_schedule(project)
+LTRROE is a stochastic modeling system for project risk assessment that implements:
 
-# Risk analysis
-durations = monte_carlo_simulation(project, num_simulations=1000)
+- **Monte Carlo simulation** for probabilistic scheduling
+- **Critical Path Method (CPM)** with resource constraints
+- **Human factor modeling** based on skill efficiency
+- **Comprehensive visualization** (4 analytical report types)
 
-# Visualization
-plot_gantt_chart(project, early_start, early_finish)
-plot_monte_carlo_histogram(durations, deadline=30)
-plot_employee_load_heatmap(project, early_start, early_finish)
-plot_skills_radar_chart(project)
-```
+**Generated outputs:**
+1. Gantt charts with critical path
+2. Probability distributions of completion dates
+3. Resource utilization heatmaps
+4. Skills gap radar charts
 
-## Contributing
-1. Fork the repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Open Pull Request
+---
+
+## Purpose
+
+This repository contains **two complete implementations**:
+
+1. **ENG/** - English version for international audience and GitHub
+2. **RUS/** - Russian version for academic submissions to Russian universities
+
+Both versions are functionally identical, differing only in language and documentation.
+
+---
+
+## Documentation
+
+### Technical Documentation
+- `ENG/README.md` - English technical documentation
+- `RUS/README.md` - Русская техническая документация
+
+### Academic Research Descriptions
+- `ENG/README_ACADEMIC.md` - Academic context in English
+- `RUS/README_АКАДЕМИЧЕСКИЙ.md` - Академическое описание на русском
+
+### Formal Documentation
+- `DOCS/research_paper.pdf` - Academic paper (bilingual)
+- `DOCS/presentation.pdf` - Research presentation slides
+- `DOCS/mathematical_model.pdf` - Formal mathematical model
+---
+
+## Academic Submission
+
+For submission to **HSE Faculty of Computer Science** (or other Russian universities):
+
+1. **Submit from `RUS/` folder** (Russian version)
+2. **Include `DOCS/research_paper.pdf`**
+3. **Include `DOCS/presentation.pdf`**
+4. **Provide GitHub repository link**
+
+---
+
+## Author
+
+**roreternity**  
+GitHub: [https://github.com/roreternity](https://github.com/roreternity)  
+Repository: [https://github.com/roreternity/LTRROE](https://github.com/roreternity/LTRROE)
+
+---
 
 ## License
-MIT License - see LICENSE file.
 
-## Contact
-Author: roreternity  
-Project Link: https://github.com/roreternity/LTRROE
-# LTRROE
-# LTRROE
-# LTRROE
-# LTRROE
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+*Research project in stochastic optimization and project risk analysis.*  
+*Developed for academic research applications.*
+
