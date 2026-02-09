@@ -89,5 +89,6 @@ plot_skills_radar_chart(project)
 MIT License - see LICENSE file
 
 ## Contact
-Author: roreternity (contacts in my profile0
+Author: roreternity (contacts in my profile)
+
 Project Link: https://github.com/roreternity/LTRROE
