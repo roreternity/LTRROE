@@ -6,7 +6,6 @@
 **Stochastic modeling system for project risk assessment and resource optimization.**
 
 ## Quick Start
-
 ```bash
 # Clone repository
 git clone https://github.com/roreternity/LTRROE.git
@@ -19,27 +18,23 @@ pip install -r requirements.txt
 python demo_ltrroe.py
 ```
 
-Features
+## Features
+- **Monte-Carlo simulation** - Probabilistic project scheduling
+- **Critical Path Method** - Network analysis with resource constraints
+- **Human factor modeling** - Skill-based performance assessment
+- **Comprehensive visualization** - Four analytical report types
 
-    Monte Carlo simulation - Probabilistic project scheduling
-
-    Critical Path Method - Network analysis with resource constraints
-
-    Human factor modeling - Skill-based performance assessment
-
-    Comprehensive visualization - Four analytical report types
-
-Project Structure
+## Project Structure
 ```
 ENG/
 ├── models.py              # Data models (Project, Task, Employee)
 ├── algorithmes.py         # Core algorithms (CPM, Monte Carlo)
 ├── visualisation.py       # Visualization module (4 chart types)
 ├── test_data.py           # Test project generator
-├── demo_ltrroe.py         # Complete demonstration script
-└── requirements.txt       # Python dependencies
+└── demo_ltrroe.py         # Complete demonstration script
 ```
-Core API Examples
+
+## Core API Examples
 ```python
 from test_data import create_test_project
 from algorithmes import calculate_schedule, monte_carlo_simulation
@@ -57,25 +52,19 @@ print(f"Average duration: {sum(durations)/len(durations):.1f} days")
 plot_gantt_chart(project, early_start, early_finish)
 ```
 
-Generated Reports
+## Generated Reports
+- `gantt_chart.png` - Schedule visualization with critical path
+- `monte_carlo_histogram.png` - Probability distribution
+- `employee_load_heatmap.png` - Resource utilization
+- `skills_radar_chart.png` - Competency analysis
 
-    gantt_chart.png - Schedule visualization with critical path
-
-    monte_carlo_histogram.png - Probability distribution
-
-    employee_load_heatmap.png - Resource utilization
-
-    skills_radar_chart.png - Competency analysis
-
-Academic Research
-
+## Academic Research
 For academic context and research methodology, see README_ACADEMIC.md.
-License
 
+## License
 MIT License. See LICENSE for details.
-Contact
 
-Author: roreternity
-GitHub: https://github.com/roreternity
+## Contacts
+**Author:** roreternity
 
-Project: https://github.com/roreternity/LTRROE
+**Project:** https://github.com/roreternity/LTRROE
