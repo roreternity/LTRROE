@@ -49,7 +49,7 @@ LTRROE/
 ├── test_data.py           # Test data 
 ├── algorithmes.py         # Core algorithms
 ├── visualisation.py       # Visualization module
-└── README.txt
+└── README.md
 ```
 
 ## Example Output
@@ -86,12 +86,8 @@ plot_skills_radar_chart(project)
 5. Open Pull Request
 
 ## License
-MIT License - see LICENSE file.
+MIT License - see LICENSE file
 
 ## Contact
-Author: roreternity  
+Author: roreternity (contacts in my profile0
 Project Link: https://github.com/roreternity/LTRROE
-# LTRROE
-# LTRROE
-# LTRROE
-# LTRROE
