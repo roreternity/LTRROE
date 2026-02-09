@@ -30,7 +30,7 @@ Features
     Comprehensive visualization - Four analytical report types
 
 Project Structure
-
+```
 ENG/
 ├── models.py              # Data models (Project, Task, Employee)
 ├── algorithmes.py         # Core algorithms (CPM, Monte Carlo)
@@ -38,7 +38,7 @@ ENG/
 ├── test_data.py           # Test project generator
 ├── demo_ltrroe.py         # Complete demonstration script
 └── requirements.txt       # Python dependencies
-
+```
 Core API Examples
 ```python
 from test_data import create_test_project
