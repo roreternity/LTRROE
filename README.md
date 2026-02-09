@@ -89,7 +89,6 @@ Both versions are functionally identical, differing only in language and documen
 - `DOCS/research_paper.pdf` - Academic paper (bilingual)
 - `DOCS/presentation.pdf` - Research presentation slides
 - `DOCS/mathematical_model.pdf` - Formal mathematical model
-- 
 ---
 
 ## Academic Submission
