@@ -96,9 +96,7 @@ Both versions are functionally identical, differing only in language and documen
 For submission to **HSE Faculty of Computer Science** (or other Russian universities):
 
 1. **Submit from `RUS/` folder** (Russian version)
-2. **Include `DOCS/research_paper.pdf`**
-3. **Include `DOCS/presentation.pdf`**
-4. **Provide GitHub repository link**
+2. **Provide GitHub repository link**
 
 ---
 
