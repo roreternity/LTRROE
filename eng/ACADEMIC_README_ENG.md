@@ -12,7 +12,7 @@ The framework is designed as a **baseline** for subsequent **Machine Learning** 
 
 ---
 
-## 📚 Theoretical Foundation
+## Theoretical Foundation
 
 The project is based on established methodologies:
 
