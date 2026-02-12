@@ -1,5 +1,3 @@
-Markdown
-
 # LTRROE: Stochastic Project Risk Modeling Framework
 
 > **Academic Research Project Description**
