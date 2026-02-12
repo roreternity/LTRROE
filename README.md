@@ -30,11 +30,6 @@ LTRROE/
 │   ├── test_data.py       # Генератор тестовых данных
 │   └── demo_ltrroe.py     # Полная демонстрация
 │
-├── DOCS/                  # Documentation and research papers
-│   ├── research_paper.pdf      # Academic paper (bilingual)
-│   ├── presentation.pdf        # Research presentation
-│   └── mathematical_model.pdf  # Formal model specification
-│
 ├── EXAMPLES/              # Generated example outputs
 │   ├── gantt_chart.png
 │   ├── monte_carlo_histogram.png
