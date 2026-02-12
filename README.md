@@ -93,7 +93,7 @@ Both versions are functionally identical, differing only in language and documen
 
 ## Academic Submission
 
-For submission to **HSE Faculty of Computer Science** (or other Russian universities):
+For submission to universities:
 
 1. **Submit from `RUS/` folder** (Russian version)
 2. **Provide GitHub repository link**
