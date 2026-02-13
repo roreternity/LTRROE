@@ -80,10 +80,6 @@ Both versions are functionally identical, differing only in language and documen
 - `ENG/README_ACADEMIC_ENG.md` - Academic context in English
 - `RUS/README_ACADEMIC_RUS.md` - Академическое описание на русском
 
-### Formal Documentation
-- `DOCS/research_paper.pdf` - Academic paper (bilingual)
-- `DOCS/presentation.pdf` - Research presentation slides
-- `DOCS/mathematical_model.pdf` - Formal mathematical model
 ---
 
 ## Academic Submission
