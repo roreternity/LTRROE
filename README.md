@@ -88,7 +88,7 @@ Both versions are functionally identical, differing only in language and documen
 
 ## Academic Submission
 
-For HSE submission to universities:
+Forsubmission to universitiy HSE:
 
 1. **Submit from `RUS/` folder** (Russian version)
 2. **Provide GitHub repository link**
