@@ -1,3 +1,4 @@
+```markdown
 # LTRROE Project Repository
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
@@ -12,33 +13,23 @@
 
 ```
 LTRROE/
-├── ENG/                    # English version (full implementation)
-│   ├── README.md          # Technical documentation (English)
-│   ├── README_ACADEMIC_ENG.md # Academic research description (English)
-│   ├── models.py          # Data models
-│   ├── algorithmes.py     # Core algorithms
-│   ├── visualisation.py   # Visualization module
-│   ├── test_data.py       # Test data generator
-│   └── demo_ltrroe.py     # Complete demonstration
+├── ENG/                              # English version
+│   ├── datasets/                     # Synthetic dataset (CSV)
+│   ├── executable/                   # All Python source code
+│   ├── models/                       # Trained ML models (.pkl)
+│   └── visual/                       # Generated plots
 │
-├── RUS/                    # Russian version (for academic submission)
-│   ├── README.md          # Техническая документация (русский)
-│   ├── README_ACADEMIC_RUS.md  # Академическое описание (русский)
-│   ├── models.py          # Модели данных
-│   ├── algorithmes.py     # Основные алгоритмы
-│   ├── visualisation.py   # Модуль визуализации
-│   ├── test_data.py       # Генератор тестовых данных
-│   └── demo_ltrroe.py     # Полная демонстрация
+├── RUS/                              # Russian version (same structure)
+│   ├── datasets/                     # Synthetic dataset (CSV)
+│   ├── executable/                   # Source code (Russian)
+│   ├── models/                       # Trained ML models (.pkl)
+│   └── visual/                       # Generated plots
 │
-├── EXAMPLES/              # Generated example outputs
-│   ├── gantt_chart.png
-│   ├── monte_carlo_histogram.png
-│   ├── employee_load_heatmap.png
-│   └── skills_radar_chart.png
-│
-├── LICENSE               # MIT License
-└── README.md            # This file
+├── LICENSE                           # MIT License
+└── README.md                         # This file
 ```
+
+> Both `ENG/` and `RUS/` are **functionally identical** – only the language differs.
 
 ---
 
@@ -59,35 +50,27 @@ LTRROE is a stochastic modeling system for project risk assessment that implemen
 
 ---
 
-## Purpose
+## Quick Start
 
-This repository contains **two complete implementations**:
+```bash
+# Install dependencies
+pip install numpy pandas matplotlib seaborn scikit-learn xgboost scipy
 
-1. **ENG/** - English version for international audience and GitHub
-2. **RUS/** - Russian version for academic submissions to Russian universities
+# Run English demo
+cd ENG/executable
+python demo_ltrroe.py
 
-Both versions are functionally identical, differing only in language and documentation.
-
----
-
-## Documentation
-
-### Technical Documentation
-- `ENG/README.md` - English technical documentation
-- `RUS/README.md` - Русская техническая документация
-
-### Academic Research Descriptions
-- `ENG/README_ACADEMIC_ENG.md` - Academic context in English
-- `RUS/README_ACADEMIC_RUS.md` - Академическое описание на русском
+# Run Russian demo
+cd RUS/executable
+python demo_ltrroe.py
+```
 
 ---
 
-## Academic Submission
+## Research Use
 
-Forsubmission to universitiy HSE:
-
-1. **Submit from `RUS/` folder** (Russian version)
-2. **Provide GitHub repository link**
+This project is designed for academic research in stochastic optimization and project risk analysis.  
+Both language versions are provided for convenience.
 
 ---
 
@@ -101,10 +84,10 @@ Repository: [https://github.com/roreternity/LTRROE](https://github.com/roreterni
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License – see [LICENSE](LICENSE) file for details.
 
 ---
 
 *Research project in stochastic optimization and project risk analysis.*  
 *Developed for academic research applications.*
-
+```
