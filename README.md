@@ -1,4 +1,3 @@
-```markdown
 # LTRROE Project Repository
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
@@ -90,4 +89,3 @@ MIT License – see [LICENSE](LICENSE) file for details.
 
 *Research project in stochastic optimization and project risk analysis.*  
 *Developed for academic research applications.*
-```
