@@ -10,7 +10,7 @@
 
 ## Repository Structure
 
-```
+
 LTRROE/
 ├── ENG/                              # English version
 │   ├── datasets/                     # Synthetic dataset (CSV)
@@ -26,7 +26,7 @@ LTRROE/
 │
 ├── LICENSE                           # MIT License
 └── README.md                         # This file
-```
+
 
 > Both `ENG/` and `RUS/` are **functionally identical** – only the language differs.
 
