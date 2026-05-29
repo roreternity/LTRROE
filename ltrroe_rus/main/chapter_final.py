@@ -1,16 +1,15 @@
 """
-Генерация графиков для главы "Валидация на реальном датасете Gryzzly".
-Запускать с актуальным metrics_results_full.csv (после последнего прогона).
+Генерация графиков датасета Gryzzly"
+Запускать с актуальным metrics_results_full.csv (после последнего прогона)
 """
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import seaborn as sns
 from pathlib import Path
 
-# ── Настройки стиля (академический) ──────────────────────────────────────────
+# Настройки стиля
 plt.rcParams.update({
     'font.family':     'DejaVu Sans',
     'font.size':       11,
@@ -25,11 +24,13 @@ plt.rcParams.update({
 BLUE   = '#2563EB'
 ORANGE = '#EA580C'
 GRAY   = '#6B7280'
-OUT    = Path("figures_real")
-OUT.mkdir(exist_ok=True)
+BASE_DIR = Path(__file__).resolve().parents[1]
+FILES_DIR = BASE_DIR / "files"
+OUT    = BASE_DIR / "visual" / "final"
+OUT.mkdir(parents=True, exist_ok=True)
 
-# ── Загрузка и фильтрация ─────────────────────────────────────────────────────
-df = pd.read_csv("LTRROE_3/ltrroe_rus/files/metrics_results_full.csv")
+# Загрузка и фильтрация 
+df = pd.read_csv(FILES_DIR / "metrics_results_full.csv")
 df = df[df['mc_success'] == True].copy()
 
 # Убираем явные выбросы (det > 500 дней — единичные аномальные проекты)
@@ -42,11 +43,8 @@ print(f"Проектов для анализа: {len(df)}")
 print(df[['schedule_risk_ratio','det_duration_days','p50','p90',
           'avg_employee_efficiency','n_tasks']].describe().round(2))
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # Рис. A — Распределение schedule risk ratio
 # Главный результат главы
-# ═══════════════════════════════════════════════════════════════════════════════
 fig, ax = plt.subplots(figsize=(8, 4.5))
 
 sns.histplot(df['schedule_risk_ratio'], bins=40, color=BLUE,
@@ -66,11 +64,8 @@ fig.savefig(OUT / 'A_risk_distribution.png')
 plt.close()
 print("✓ A_risk_distribution.png")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # Рис. B — Детерминированная оценка vs P50 (Monte Carlo)
 # Показывает смещение CPM
-# ═══════════════════════════════════════════════════════════════════════════════
 fig, ax = plt.subplots(figsize=(6, 6))
 
 ax.scatter(df['det_duration_days'], df['p50'],
@@ -94,9 +89,7 @@ plt.close()
 print("✓ B_det_vs_p50.png")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # Рис. C — P50 vs P90 (неопределённость)
-# ═══════════════════════════════════════════════════════════════════════════════
 fig, ax = plt.subplots(figsize=(6, 6))
 
 ax.scatter(df['p50'], df['p90'],
@@ -115,10 +108,7 @@ fig.savefig(OUT / 'C_p50_vs_p90.png')
 plt.close()
 print("✓ C_p50_vs_p90.png")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # Рис. D — Риск vs размер проекта (n_tasks)
-# ═══════════════════════════════════════════════════════════════════════════════
 fig, ax = plt.subplots(figsize=(8, 4.5))
 
 # Binned median
@@ -145,67 +135,7 @@ fig.savefig(OUT / 'D_risk_vs_size.png')
 plt.close()
 print("✓ D_risk_vs_size.png")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Рис. E — Сводная таблица ключевых метрик (для вставки в статью)
-# ═══════════════════════════════════════════════════════════════════════════════
-summary = {
-    'Метрика': [
-        'Проектов (после фильтрации)',
-        'Задач на проект (медиана)',
-        'Сотрудников на проект (медиана)',
-        'Детерминированная длительность, дней (медиана)',
-        'P50 Монте-Карло, дней (медиана)',
-        'P90 Монте-Карло, дней (медиана)',
-        'Schedule Risk Ratio (медиана)',
-        'Schedule Risk Ratio (среднее)',
-        'Det vs P50 delta, дней (медиана)',
-        'Avg Employee Efficiency (медиана)',
-    ],
-    'Значение': [
-        f"{len(df):,}",
-        f"{df['n_tasks'].median():.0f}",
-        f"{df['n_employees'].median():.0f}",
-        f"{df['det_duration_days'].median():.0f}",
-        f"{df['p50'].median():.0f}",
-        f"{df['p90'].median():.0f}",
-        f"{df['schedule_risk_ratio'].median():.3f}",
-        f"{df['schedule_risk_ratio'].mean():.3f}",
-        f"{df['det_vs_p50_delta'].median():.1f}",
-        f"{df['avg_employee_efficiency'].median():.2f}",
-    ]
-}
-summary_df = pd.DataFrame(summary)
-
-fig, ax = plt.subplots(figsize=(8, 4))
-ax.axis('off')
-tbl = ax.table(
-    cellText=summary_df.values,
-    colLabels=summary_df.columns,
-    cellLoc='left', loc='center',
-    colWidths=[0.72, 0.28]
-)
-tbl.auto_set_font_size(False)
-tbl.set_fontsize(10)
-for (r, c), cell in tbl.get_celld().items():
-    if r == 0:
-        cell.set_facecolor('#1E3A5F')
-        cell.set_text_props(color='white', fontweight='bold')
-    elif r % 2 == 0:
-        cell.set_facecolor('#F0F4FF')
-    cell.set_edgecolor('#DDDDDD')
-    cell.set_height(0.085)
-
-ax.set_title('Сводные метрики: реальный датасет Gryzzly', pad=12,
-             fontsize=12, fontweight='bold')
-fig.savefig(OUT / 'E_summary_table.png')
-plt.close()
-print("✓ E_summary_table.png")
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # Рис. F — Корреляционная матрица
-# ═══════════════════════════════════════════════════════════════════════════════
 corr_cols = ['n_tasks', 'n_employees', 'n_dependencies',
              'critical_path_tasks', 'avg_employee_efficiency',
              'det_duration_days', 'schedule_risk_ratio']

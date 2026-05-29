@@ -3,16 +3,12 @@
 Создание полноценного тестового проекта для демонстрации и проверки системы
 """
 
-from models import Employee, Task, Dependency, Project, Outsource
-from datetime import datetime, timedelta
+from ltrroe_objects import Employee, Task, Dependency, Project, Outsource
+from datetime import datetime
 
 def create_test_project():
     """Создать полноценный тестовый проект (5 сотрудников, 10 задач)"""
-    project = Project()
-    i=0
-    for i in (int):
-        project_id = i
-        i+=1
+    project = Project(proj_id="pilot_demo")
     project.proj_start_date = datetime(2026, 1, 3)  # Фиксированная дата начала
     
     # 1. СОЗДАЁМ 5 СОТРУДНИКОВ

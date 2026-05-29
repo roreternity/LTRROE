@@ -1,7 +1,16 @@
+"""
+Ранговая корреляция Спирмена для синтетического task-level датасета.
+
+Скрипт показывает, какие признаки сильнее всего монотонно связаны с
+фактической длительностью задачи.
+"""
+
 import pandas as pd
 from scipy.stats import spearmanr
+from pathlib import Path
 
-df = pd.read_csv('synthetic_tasks27.csv')
+FILES_DIR = Path(__file__).resolve().parents[1] / "files"
+df = pd.read_csv(FILES_DIR / 'synthetic_tasks.csv')
 
 features = [
     'planned_optimistic', 'planned_likely', 'planned_pessimistic',
@@ -13,6 +22,6 @@ features = [
 results = []
 for f in features:
     corr, pval = spearmanr(df[f], df['actual_duration'])
-    results.append({'Feature': f, 'ρ (Spirmen)': round(corr, 3), 'p-value': round(pval, 4)})
+    results.append({'Feature': f, 'ρ (Spearman)': round(corr, 3), 'p-value': round(pval, 4)})
 
-print(pd.DataFrame(results).sort_values('ρ (Spirmen)', key=abs, ascending=False))
+print(pd.DataFrame(results).sort_values('ρ (Spearman)', key=abs, ascending=False))

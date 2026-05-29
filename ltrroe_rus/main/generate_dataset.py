@@ -7,8 +7,9 @@
 import random
 import pandas as pd
 from datetime import datetime
-from LTRROE_logic.ltrroe_rus.Chapter1.code.ltrroe_objects import Project, Employee, Task, Dependency
-from LTRROE_logic.ltrroe_rus.Chapter1.code.algorithms import (
+from pathlib import Path
+from ltrroe_objects import Project, Employee, Task, Dependency
+from algorithms import (
     calculate_schedule,
     get_predecessors,
     get_successors,
@@ -22,6 +23,8 @@ MIN_TASKS = 5
 MAX_TASKS = 30
 MIN_EMPLOYEES = 3
 MAX_EMPLOYEES = 15
+FILES_DIR = Path(__file__).resolve().parents[1] / "files"
+OUTPUT_CSV = FILES_DIR / "synthetic_tasks.csv"
 
 # Пул возможных навыков
 SKILL_POOL = [
@@ -45,7 +48,9 @@ def random_triple(low=1, high=30):
     return (a, b, c)
 
 def generate_dependencies(task_ids, density=0.3):
-    """Генерирует случайные зависимости (только прямые, чтобы избежать циклов)."""
+    """
+    Генерирует случайные зависимости (только прямые, чтобы избежать циклов)
+    """
     deps = []
     for i, from_id in enumerate(task_ids):
         for to_id in task_ids[i + 1:]:
@@ -59,7 +64,7 @@ def generate_dependencies(task_ids, density=0.3):
 def generate_project(proj_id):
     """
     Генерирует один полный проект.
-    Возвращает список словарей признаков (по одному на задачу).
+    Возвращает список словарей признаков (по одному на задачу)
     """
     project = Project()
     project.proj_start_date = datetime.now()
@@ -107,20 +112,20 @@ def generate_project(proj_id):
         for emp in assigned:
             task.task_assigned_to.append(emp.emp_id)
             emp.emp_assigned_tasks.append(task.task_id)
-            load_inc = round(
-                random.uniform(2, min(8, emp.emp_max_daily_hours - emp.emp_current_load)), 1
-            )
+            available_hours = max(0.0, emp.emp_max_daily_hours - emp.emp_current_load)
+            upper_load = min(8.0, available_hours)
+            load_inc = round(random.uniform(0.5, upper_load), 1) if upper_load >= 0.5 else 0.0
             if load_inc > 0:
                 emp.emp_current_load += load_inc
 
-    # ---- Создание зависимостей ----
+    # Создание зависимостей
     task_ids = list(project.proj_tasks.keys())
     project.proj_dependencies = generate_dependencies(task_ids, density=0.3)
 
-    # ---- Расчёт расписания и фактических длительностей ----
+    # Расчёт расписания и фактических длительностей
     _, _, task_duration = calculate_schedule(project)
 
-    # ---- Формирование признаков для каждой задачи ----
+    # Формирование признаков для каждой задачи
     task_data = []
     for task_id, task in project.proj_tasks.items():
         actual_duration = task_duration[task_id]
@@ -181,8 +186,9 @@ def generate_project(proj_id):
 
     return task_data
 
-# ---- Основной цикл генерации ----
+# Основной цикл генерации
 if __name__ == "__main__":
+    FILES_DIR.mkdir(parents=True, exist_ok=True)
     all_tasks = []
     for proj_id in range(NUM_PROJECTS):
         task_data = generate_project(proj_id)
@@ -191,6 +197,5 @@ if __name__ == "__main__":
             print(f"Сгенерировано {proj_id + 1} проектов...")
 
     df = pd.DataFrame(all_tasks)
-    df.to_csv('synthetic_tasks.csv', index=False)
-    print(f"Датасет сохранён: {len(df)} задач из {NUM_PROJECTS} проектов.")
-    print(df.head())
+    df.to_csv(OUTPUT_CSV, index=False)
+    print(f"Датасет сохранён: {OUTPUT_CSV} ({len(df)} задач из {NUM_PROJECTS} проектов).")

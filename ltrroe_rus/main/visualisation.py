@@ -15,7 +15,10 @@ import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 import numpy as np
 from math import pi
+from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
+
+VIS_DIR = Path(__file__).resolve().parents[1] / "visual" / "arch"
 
 def plot_gantt_chart(project, early_start: Dict, early_finish: Dict, 
                      late_start: Optional[Dict] = None) -> Tuple[Optional[plt.Figure], Optional[plt.Axes]]:
@@ -115,7 +118,8 @@ def plot_gantt_chart(project, early_start: Dict, early_finish: Dict,
         ax.set_facecolor('#f8f9fa')
         
         plt.tight_layout()
-        plt.savefig('gantt_chart.png', dpi=300, bbox_inches='tight')
+        VIS_DIR.mkdir(parents=True, exist_ok=True)
+        plt.savefig(VIS_DIR / 'gantt_chart.png', dpi=300, bbox_inches='tight')
         plt.close(fig)
         
         return fig, ax
@@ -176,7 +180,8 @@ def plot_monte_carlo_histogram(project_durations: List[float],
         ax.legend()  
         ax.grid(True, alpha=0.3)
         
-        plt.savefig('monte_carlo_histogram.png', dpi=300, bbox_inches='tight')
+        VIS_DIR.mkdir(parents=True, exist_ok=True)
+        plt.savefig(VIS_DIR / 'monte_carlo_histogram.png', dpi=300, bbox_inches='tight')
         plt.close(fig)
         
         return fig, ax
@@ -272,7 +277,8 @@ def plot_employee_load_heatmap(project, early_start: Dict, early_finish: Dict) -
         ax.set_title('Загрузка сотрудников по дням проекта')
         
         plt.tight_layout()
-        plt.savefig('employee_load_heatmap.png', dpi=300, bbox_inches='tight')
+        VIS_DIR.mkdir(parents=True, exist_ok=True)
+        plt.savefig(VIS_DIR / 'employee_load_heatmap.png', dpi=300, bbox_inches='tight')
         plt.close(fig)
         
         return fig, ax, load_matrix
@@ -415,7 +421,8 @@ def plot_skills_radar_chart(project) -> Optional[Dict]:
         
         # Сохраняем диаграмму
         plt.tight_layout()
-        plt.savefig('skills_radar_chart.png', dpi=300, bbox_inches='tight')
+        VIS_DIR.mkdir(parents=True, exist_ok=True)
+        plt.savefig(VIS_DIR / 'skills_radar_chart.png', dpi=300, bbox_inches='tight')
         plt.close()
         
         return {

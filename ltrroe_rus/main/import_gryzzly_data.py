@@ -12,7 +12,9 @@ from collections import defaultdict
 from ltrroe_objects import Project, Employee, Task
 
 # Конфигурация
-DATA_DIR = Path("LTRROE_3/ltrroe_rus/real_datasets_gryzzly")
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "real_datasets_gryzzly"
+FILES_DIR = BASE_DIR / "files"
 RANDOM_SEED = 42
 random.seed(RANDOM_SEED)
 
@@ -57,6 +59,27 @@ def is_null_str(val) -> bool:
     return str(val).strip().lower() in _NULL_STRINGS
 
 
+def normalize_id(value):
+    """
+    Привести ID из Gryzzly к строке без потери совместимости.
+    В CSV родительские ID иногда приходят как числа с `.0`, а алгоритмы сравнивают ID напрямую.
+    """
+    if is_null_str(value):
+        return None
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value).strip()
+
+
+def normalize_id_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """Нормализовать ID-колонки, которые реально есть в датафрейме."""
+    df = df.copy()
+    for column in columns:
+        if column in df.columns:
+            df[column] = df[column].apply(normalize_id)
+    return df
+
+
 # ── Загрузка CSV ──────────────────────────────────────────────────────────────
 print("Загрузка CSV...")
 _NA = ['', 'null', 'NULL', 'None', 'NaN', 'nan', 'NA', 'N/A']
@@ -68,6 +91,13 @@ tasks_computed    = pd.read_csv(DATA_DIR / "tasks_computed.csv",    keep_default
 declarations      = pd.read_csv(DATA_DIR / "declarations.csv",      keep_default_na=True, na_values=_NA)
 
 # Предобработка ─────────────────────────────────────────────────────────────
+users = normalize_id_columns(users, ["id", "team_id"])
+projects = normalize_id_columns(projects, ["id"])
+projects_computed = normalize_id_columns(projects_computed, ["id"])
+tasks = normalize_id_columns(tasks, ["id", "project_id", "parent_id"])
+tasks_computed = normalize_id_columns(tasks_computed, ["id"])
+declarations = normalize_id_columns(declarations, ["id", "user_id", "task_id"])
+
 # Все пользователи — удалённые тоже участвовали в исторических задачах,
 # их декларации реальны и нужны для расчёта эффективности.
 # Флаг is_active позволяет различать при необходимости.
@@ -86,7 +116,7 @@ for df in (tasks_full, projects_full):
     df['planned_duration'] = df['planned_duration'].apply(parse_duration_str)
     df['elapsed_duration'] = df['elapsed_duration'].apply(parse_duration_str)
 
-# FIX: duration в declarations — наносекунды (int64), не строки
+# duration в declarations хранится в наносекундах, а не в строковом формате
 declarations = declarations.copy()
 declarations['duration'] = declarations['duration'].apply(parse_duration_ns)
 print(f"Пример duration после парсинга (часы): {declarations['duration'].head(3).tolist()}")
@@ -108,7 +138,8 @@ _candidate_projects = projects_full[
 ]
 _candidate_ids = set(_candidate_projects['id'])
 
-# Группируем задачи по проекту ОДИН РАЗ — иначе цикл O(n_proj × n_tasks)
+# Группируем задачи по проекту один раз, чтобы не выполнять полный проход по
+# таблице задач для каждого проекта.
 _valid_tasks = tasks_full[
     tasks_full['project_id'].isin(_candidate_ids) &
     (tasks_full['planned_duration'] >= MIN_TASK_HOURS)
@@ -147,8 +178,8 @@ n_proj_dropped = len(projects_full) - len(valid_project_ids)
 print(f"Проектов прошло фильтр: {len(valid_project_ids)} из {len(projects_full)} "
       f"(отброшено: {n_proj_dropped})")
 
-# FIX: valid_project_ids — list, конвертируем в Series для .sample()
-valid_project_ids_s  = pd.Series(valid_project_ids)
+# valid_project_ids — list, конвертируем в Series для воспроизводимой выборки
+valid_project_ids_s  = pd.Series(sorted(valid_project_ids))
 sample_project_ids   = valid_project_ids_s.sample(min(5000, len(valid_project_ids_s)), random_state=RANDOM_SEED)
 projects_full_sample = projects_full[projects_full['id'].isin(sample_project_ids)]
 
@@ -182,7 +213,7 @@ def get_employee_efficiency(user_id, tasks_df: pd.DataFrame,
                             primary_map: dict) -> float:
     """
     Эффективность = среднее (planned / elapsed) по задачам, где user — primary
-    FIX 3: принимает готовый primary_map вместо пересчёта внутри    
+    Принимает готовый primary_map, чтобы не пересчитывать его внутри цикла.
     """
     user_task_ids = [tid for tid, uid in primary_map.items() if uid == user_id]
     if not user_task_ids:
@@ -206,8 +237,8 @@ def assign_skills_to_user(_user_id) -> list:
 primary_map = build_primary_map(declarations_sample)
 
 # ── Построение объектов LTRROE ────────────────────────────────────────────────
-# FIX 2 (продолжение): итерируем только по отобранным проектам
-project_task_ids: dict[int, list] = defaultdict(list)
+# Итерируем только по отобранным проектам.
+project_task_ids: dict[str, list[str]] = defaultdict(list)
 for _, row in tasks_full_sample.iterrows():
     project_task_ids[row['project_id']].append(row['id'])
 
@@ -265,18 +296,19 @@ for proj_id, task_ids in project_task_ids.items():
         planned_h   = task_row['planned_duration']
         elapsed_h   = task_row['elapsed_duration']
 
-        # 1. выбрасываем полный мусор
+        # 1. Отбрасываем строки без полезной оценки длительности.
         if planned_h <= 0 and elapsed_h <= 0:
             continue
 
-        # 2. нормализуем базу
+        # 2. Используем фактическую длительность как суррогат, если плановая
+        # оценка отсутствует или слишком мала.
         base_h = max(planned_h, elapsed_h, 0.25)  # минимум 15 минут
         planned_days = base_h / 8.0
 
-        # 3. гарантируем нормальный PERT
+        # 3. Строим корректный PERT-триплет: pessimistic строго больше most likely.
         a = max(0.25, planned_days * 0.7)
         m = max(a, planned_days)
-        b = max(m + 0.01, planned_days * 1.5)  # ← ключевая строка
+        b = max(m + 0.01, planned_days * 1.5)
 
         if   m > 20: crit = 5
         elif m > 10: crit = 4
@@ -304,12 +336,12 @@ for proj_id, task_ids in project_task_ids.items():
     # ── Зависимости (parent → child) ─────────────────────────────────────────
     proj_tasks_df = tasks_full_sample[tasks_full_sample['project_id'] == proj_id]
     for _, row in proj_tasks_df.iterrows():
-        parent = row.get('parent_id')
-        child  = row['id']
-        if pd.notna(parent) and parent in ltr_proj.proj_tasks and child in ltr_proj.proj_tasks:
+        parent = normalize_id(row.get('parent_id'))
+        child  = normalize_id(row['id'])
+        if parent and parent in ltr_proj.proj_tasks and child in ltr_proj.proj_tasks:
             ltr_proj.add_dependency(
-                dep_from_task=str(parent),
-                dep_to_task=str(child),
+                dep_from_task=parent,
+                dep_to_task=child,
                 dep_type="FS",
                 dep_lag=0.0,
                 dep_mandatory=True
@@ -350,7 +382,8 @@ if lost_ids:
               f"валидных={n_tasks_valid}, деклараций={n_decl}")
 
 # ── Сохранение ────────────────────────────────────────────────────────────────
-output_file = "ltrroe_real_projects.pkl"
+FILES_DIR.mkdir(parents=True, exist_ok=True)
+output_file = FILES_DIR / "ltrroe_real_projects.pkl"
 with open(output_file, "wb") as f:
     pickle.dump(all_projects, f)
 print(f"Проекты сохранены в {output_file}")

@@ -370,9 +370,9 @@ class LTRROEValidator:
                               'task_assigned_to', task.task_assigned_to)
             else:
                 for emp_id in task.task_assigned_to:
-                    if not isinstance(emp_id, int):
+                    if not isinstance(emp_id, (int, str)):
                         self._add_issue(ValidationLevel.ERROR,
-                                      f"ID назначенного сотрудника должен быть целым числом: {emp_id}",
+                                      f"ID назначенного сотрудника должен быть строкой или целым числом: {emp_id}",
                                       'Task', task_id,
                                       'task_assigned_to', emp_id)
 
@@ -399,9 +399,9 @@ class LTRROEValidator:
 
         if hasattr(task, 'task_primary_assignee'):
             if task.task_primary_assignee is not None:
-                if not isinstance(task.task_primary_assignee, int):
+                if not isinstance(task.task_primary_assignee, (int, str)):
                     self._add_issue(ValidationLevel.ERROR,
-                                  "Основной исполнитель должен быть целым числом (ID)",
+                                  "Основной исполнитель должен быть строкой или целым числом (ID)",
                                   'Task', task_id,
                                   'task_primary_assignee', task.task_primary_assignee)
 
@@ -438,9 +438,9 @@ class LTRROEValidator:
                               'Dependency', dep_id,
                               'dep_id', dependency.dep_id)
 
-        if not isinstance(dependency.dep_from_task, int):
+        if not isinstance(dependency.dep_from_task, (int, str)):
             self._add_issue(ValidationLevel.ERROR,
-                          "dep_from_task должен быть целым числом",
+                          "dep_from_task должен быть строкой или целым числом",
                           'Dependency', dep_id,
                           'dep_from_task', dependency.dep_from_task)
         elif dependency.dep_from_task not in task_ids:
@@ -449,9 +449,9 @@ class LTRROEValidator:
                           'Dependency', dep_id,
                           'dep_from_task', dependency.dep_from_task)
 
-        if not isinstance(dependency.dep_to_task, int):
+        if not isinstance(dependency.dep_to_task, (int, str)):
             self._add_issue(ValidationLevel.ERROR,
-                          "dep_to_task должен быть целым числом",
+                          "dep_to_task должен быть строкой или целым числом",
                           'Dependency', dep_id,
                           'dep_to_task', dependency.dep_to_task)
         elif dependency.dep_to_task not in task_ids:

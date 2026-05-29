@@ -2,17 +2,9 @@
 LTRROE Полная демонстрация системы
 Исследовательский проект в области стохастического моделирования проектных рисков
 """
-
-import sys
-import os
-from LTRROE_logic.ltrroe_rus.Chapter1.code.test_data import create_test_project
-from LTRROE_logic.ltrroe_rus.Chapter1.code.algorithms import calculate_schedule, monte_carlo_simulation, calculate_backward_pass
-from LTRROE_logic.ltrroe_rus.Chapter1.code.visualisation import (
-    plot_gantt_chart,
-    plot_monte_carlo_histogram,
-    plot_employee_load_heatmap,
-    plot_skills_radar_chart
-)
+from test_data import create_test_project
+from algorithms import calculate_schedule, monte_carlo_simulation, calculate_backward_pass
+from visualisation import  plot_gantt_chart, plot_monte_carlo_histogram, plot_employee_load_heatmap, plot_skills_radar_chart
 
 def demonstrate_research_project():
     """Полная демонстрация исследовательских возможностей LTRROE"""

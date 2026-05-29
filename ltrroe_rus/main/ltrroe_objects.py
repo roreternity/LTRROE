@@ -16,11 +16,13 @@
 Каждый класс содержит все необходимые атрибуты для моделирования и анализа.
 """
  
-from datetime import datetime, timedelta
-from typing import List, Dict, Optional
+from datetime import datetime
+from typing import Dict, List, Optional, Union
+
+EntityId = Union[int, str]
 
 class Employee:
-    def __init__(self, emp_id: int, emp_name: str, emp_skills: List[str],
+    def __init__(self, emp_id: EntityId, emp_name: str, emp_skills: List[str],
                  emp_error_prob: float, emp_cost_per_hour: float,
                  emp_efficiency: Dict[str, float]):
         self.emp_id = emp_id
@@ -35,7 +37,7 @@ class Employee:
         self.emp_assigned_tasks = []  # Текущие назначенные задачи
 
 class Task:
-    def __init__(self, task_id: int, task_name: str, task_skills: List[str], 
+    def __init__(self, task_id: EntityId, task_name: str, task_skills: List[str], 
                  task_crit: int, task_cost: float, task_duration_dist: tuple):
         self.task_id = task_id
         self.task_name = task_name
@@ -49,7 +51,7 @@ class Task:
         self.task_primary_assignee = None 
 
 class Dependency:
-    def __init__(self, dep_from_task: int, dep_to_task: int, 
+    def __init__(self, dep_from_task: EntityId, dep_to_task: EntityId, 
                  dep_type: str, dep_lag: float, 
                  dep_mandatory: bool = True, dep_id: Optional[int] = None):
         self.dep_id = dep_id
@@ -74,8 +76,8 @@ class Outsource:
 class Project:
     def __init__(self, proj_id=None):
         self.proj_id = proj_id
-        self.proj_employees: Dict[int, Employee] = {}  # Словарь сотрудников
-        self.proj_tasks: Dict[int, Task] = {}  # Словарь задач
+        self.proj_employees: Dict[EntityId, Employee] = {}  # Словарь сотрудников
+        self.proj_tasks: Dict[EntityId, Task] = {}  # Словарь задач
         self.proj_dependencies: Dict[int, Dependency] = {}  # Словарь зависимостей
         self.proj_outsources: List[Outsource] = []  # Опции аутсорсинга
         self.proj_start_date = datetime.now()  # Дата начала проекта
@@ -84,7 +86,7 @@ class Project:
         self._next_dep_id = 1 # Счётчик зависимостей
         
 
-    def add_dependency(self, dep_from_task: int, dep_to_task: int, 
+    def add_dependency(self, dep_from_task: EntityId, dep_to_task: EntityId, 
                    dep_type: str, dep_lag: float, dep_mandatory: bool = True):
         dep = Dependency(
             dep_id=self._next_dep_id,
@@ -99,7 +101,7 @@ class Project:
         return dep
     
 class Assignment:
-    def __init__(self, asg_task_id: int, asg_emp_id: int, 
+    def __init__(self, asg_task_id: EntityId, asg_emp_id: EntityId, 
                  asg_planned_start: datetime, asg_planned_end: datetime,
                  asg_hours_per_day: float):
         self.asg_task_id = asg_task_id  # Назначенная задача

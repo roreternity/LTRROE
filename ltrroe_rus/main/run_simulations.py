@@ -23,10 +23,7 @@ OUTPUT_CSV      = FILES_DIR / "metrics_results_full.csv"
 
 random.seed(RANDOM_SEED)
 
-# ── Загрузка ──────────────────────────────────────────────────────────────────
-# Старые pickle-файлы были сохранены с классами из модуля "models".
-# В текущей структуре эти классы лежат в ltrroe_objects, поэтому даём pickle
-# совместимый alias.
+# Загрузка
 sys.modules.setdefault("models", ltrroe_objects)
 
 with open(PROJECTS_PKL, "rb") as f:
@@ -39,7 +36,7 @@ valid_projects = [
 ]
 print(f"Валидных проектов:  {len(valid_projects)}")
 
-# ── CSV-поля ──────────────────────────────────────────────────────────────────
+# CSV-поля
 CSV_FIELDS = [
     "project_id",
     "n_tasks", "n_employees", "n_dependencies",
@@ -56,31 +53,42 @@ CSV_FIELDS = [
 results = []
 errors  = []
 
-# ── Основной цикл ─────────────────────────────────────────────────────────────
-for idx, proj in enumerate(valid_projects, 1):
-    pid = getattr(proj, 'proj_id', f"proj_{idx}")
-    row = {
-        "project_id":    pid,
-        "n_tasks":       len(proj.proj_tasks),
-        "n_employees":   len(proj.proj_employees),
-        "n_dependencies": len(proj.proj_dependencies),
-        "mc_success":    False,
-        "error_msg":     None,
-    }
-        # Преобразуем proj_dependencies в список объектов Dependency
-    if isinstance(proj.proj_dependencies, dict):
-        proj.proj_dependencies = list(proj.proj_dependencies.values())
-    # Дополнительно отфильтруем только объекты Dependency
-    proj.proj_dependencies = [d for d in proj.proj_dependencies if isinstance(d, Dependency)]
-    # Очистка proj_dependencies от мусора (целых чисел) и приведение к словарю
-    # Гарантированно превращаем в список объектов Dependency
-    deps = proj.proj_dependencies
+def normalize_dependencies(project):
+    """
+    Вернуть зависимости проекта как список объектов Dependency.
+    Старые pickle-файлы могли хранить зависимости словарём, списком или
+    посторонними значениями.
+    """
+    deps = project.proj_dependencies
     if isinstance(deps, dict):
         deps = list(deps.values())
     elif not isinstance(deps, list):
         deps = []
-    # Оставляем только объекты Dependency
-    proj.proj_dependencies = [d for d in deps if isinstance(d, Dependency)]
+
+    clean_deps = [dep for dep in deps if isinstance(dep, Dependency)]
+    project.proj_dependencies = clean_deps
+    return clean_deps
+
+
+def percentile(sorted_values, q: float):
+    """Простой индексный квантиль для уже отсортированного списка симуляций."""
+    if not sorted_values:
+        return None
+    index = min(len(sorted_values) - 1, max(0, int(len(sorted_values) * q)))
+    return sorted_values[index]
+
+# Основной цикл
+for idx, proj in enumerate(valid_projects, 1):
+    pid = getattr(proj, 'proj_id', f"proj_{idx}")
+    deps = normalize_dependencies(proj)
+    row = {
+        "project_id":    pid,
+        "n_tasks":       len(proj.proj_tasks),
+        "n_employees":   len(proj.proj_employees),
+        "n_dependencies": len(deps),
+        "mc_success":    False,
+        "error_msg":     None,
+    }
 
     try:
         # 1. Forward pass
@@ -105,11 +113,10 @@ for idx, proj in enumerate(valid_projects, 1):
         ]
         row["avg_employee_efficiency"] = round(mean(eff_values), 4) if eff_values else None
 
-                # 4. Monte Carlo
+        # 4. Monte Carlo
         sims = monte_carlo_simulation(proj, num_simulations=NUM_SIMULATIONS)
         if sims:
             s = sorted(sims)
-            n = len(s)
             # Если все симуляции дали одинаковую длительность (например, 0)
             if s[0] == s[-1]:
                 row["p10"] = row["p50"] = row["p90"] = s[0]
@@ -117,9 +124,9 @@ for idx, proj in enumerate(valid_projects, 1):
                 row["det_vs_p50_delta"] = s[0] - det_duration
                 row["mc_success"] = True
             else:
-                p10 = s[max(0, int(n * 0.10))]
-                p50 = s[int(n * 0.50)]
-                p90 = s[min(n - 1, int(n * 0.90))]
+                p10 = percentile(s, 0.10)
+                p50 = percentile(s, 0.50)
+                p90 = percentile(s, 0.90)
                 row["p10"] = p10
                 row["p50"] = p50
                 row["p90"] = p90
@@ -146,7 +153,7 @@ for idx, proj in enumerate(valid_projects, 1):
 
 print(f"\nИтого: {len(results)} проектов, ошибок: {len(errors)}")
 
-# ── Сохранение ────────────────────────────────────────────────────────────────
+# Сохранение
 with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
     writer = csv.DictWriter(f, fieldnames=CSV_FIELDS, extrasaction="ignore")
     writer.writeheader()
@@ -158,7 +165,7 @@ if errors:
     for pid, msg in errors[:10]:
         print(f"  {pid}: {msg}")
 
-# ── Сводка ────────────────────────────────────────────────────────────────────
+# Сводка
 ok = [r for r in results if r["mc_success"]]
 print(f"\n{'='*60}")
 print(f"СВОДКА  ({len(ok)} проектов с успешным МК из {len(results)})")
@@ -173,8 +180,9 @@ def stat(label, vals):
           f"min={min(vals):.2f}  med={median(vals):.2f}  "
           f"mean={mean(vals):.2f}  max={max(vals):.2f}{sd}")
 
-if p50 == 0:
-    print(f"Предупреждение: проект {pid} имеет нулевой P50 (все симуляции = 0)")
+zero_p50_projects = [r["project_id"] for r in ok if r.get("p50") == 0]
+if zero_p50_projects:
+    print(f"Предупреждение: проектов с нулевым P50: {len(zero_p50_projects)}")
 stat("Задач на проект",         [r["n_tasks"]               for r in ok])
 stat("Сотрудников",             [r["n_employees"]            for r in ok])
 stat("Зависимостей",            [r["n_dependencies"]         for r in ok])

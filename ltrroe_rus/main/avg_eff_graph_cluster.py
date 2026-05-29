@@ -1,8 +1,22 @@
+"""
+Группировка реальных проектов по прокси-эффективности команды.
+
+Скрипт строит диагностические boxplot-графики для проверки того, как
+avg_employee_efficiency связан с длительностью проекта, P50, Schedule Risk Ratio
+и смещением P50 относительно детерминированной оценки.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 
-df = pd.read_csv('LTRROE_3_0/ltrroe_rus/Chapter3/code/metrics_results_full.csv')
+BASE_DIR = Path(__file__).resolve().parents[1]
+FILES_DIR = BASE_DIR / "files"
+VIS_DIR = BASE_DIR / "visual" / "final"
+VIS_DIR.mkdir(parents=True, exist_ok=True)
+
+df = pd.read_csv(FILES_DIR / 'metrics_results_full.csv')
 df = df[df['mc_success'] == True].dropna(subset=['avg_employee_efficiency'])
 
 # Группировка
@@ -30,5 +44,4 @@ axes[1,0].set_title('Коэффициент риска (P90-P50)/P50')
 sns.boxplot(data=df, x='eff_group', y='det_vs_p50_delta', ax=axes[1,1])
 axes[1,1].set_title('Смещение детерм. оценки (P50 - det)')
 plt.tight_layout()
-plt.savefig('efficiency_groups.png', dpi=150)
-plt.show()
+plt.savefig(VIS_DIR / 'efficiency_groups.png', dpi=150)

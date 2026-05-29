@@ -11,9 +11,14 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 
 # 1. Загрузка данных 
-DATA_PATH = '/Users/roryqwork/Documents/Workspace/LTRROE/ltrroe_rus/datasets/synthetic_tasks.csv'
+BASE_DIR = Path(__file__).resolve().parents[1]
+FILES_DIR = BASE_DIR / "files"
+VIS_DIR = BASE_DIR / "visual" / "xgboost"
+DATA_PATH = FILES_DIR / "synthetic_tasks.csv"
+VIS_DIR.mkdir(parents=True, exist_ok=True)
 df = pd.read_csv(DATA_PATH)
 
 print("Размер датасета:", df.shape)
@@ -69,7 +74,7 @@ print("\nВажность признаков:")
 print(importances.round(4))
 
 # 7. Сохранение модели
-MODEL_PATH = 'ltrroe_xgboost_model.pkl'
+MODEL_PATH = FILES_DIR / 'ltrroe_xgboost_model.pkl'
 joblib.dump(model, MODEL_PATH)
 print(f"\nМодель сохранена в файл: {MODEL_PATH}")
 
@@ -81,7 +86,7 @@ plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2
 plt.xlabel('Фактическая длительность (дни)')
 plt.ylabel('Предсказанная длительность (дни)')
 plt.title('Факт vs Предсказание (XGBoost)')
-plt.savefig('actual_vs_predicted_xgb.png')
+plt.savefig(VIS_DIR / 'actual_vs_predicted_xgb.png')
 plt.close()
 
 # 8.2 Распределение ошибок
@@ -90,7 +95,7 @@ plt.figure(figsize=(10, 6))
 sns.histplot(errors, bins=50, kde=True)
 plt.xlabel('Ошибка (дни)')
 plt.title('Распределение ошибок (XGBoost)')
-plt.savefig('error_distribution_xgb.png')
+plt.savefig(VIS_DIR / 'error_distribution_xgb.png')
 plt.close()
 
 # 8.3 Столбчатая диаграмма важности признаков
@@ -100,7 +105,7 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
 plt.title('Важность признаков (XGBoost)')
 plt.ylabel('Вклад')
 plt.tight_layout()
-plt.savefig('feature_importance_xgb.png')
+plt.savefig(VIS_DIR / 'feature_importance_xgb.png')
 plt.close()
 
 # 9. Бейзлайны (на всём датасете)
@@ -158,6 +163,6 @@ ax.set_xticklabels(results['Модель'], rotation=15, ha='right')
 for i, row in results.iterrows():
     ax.text(i, row['MAE'] + 0.3, f"{row['MAE']}", ha='center', fontsize=9)
 plt.tight_layout()
-plt.savefig('baseline_comparison_xgb.png', dpi=150)
+plt.savefig(VIS_DIR / 'baseline_comparison_xgb.png', dpi=150)
 plt.close()
-print("Сохранено: baseline_comparison_xgb.png")
+print(f"Сохранено: {VIS_DIR / 'baseline_comparison_xgb.png'}")

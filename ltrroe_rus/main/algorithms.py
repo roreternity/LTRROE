@@ -29,7 +29,8 @@ def get_predecessors(project, task_id: int) -> List[int]:
 def calculate_slowdown_factor(employee, task) -> float:
     """
     Рассчитать коэффициент замедления для сотрудника на задаче
-    На основе несоответствия навыков и нагрузки
+    На основе несоответствия навыков и нагрузки.
+    Если эффективность больше 1, множитель становится меньше 1 и задача ускоряется.
     """
     required_skills = task.task_skills or []
     employee_skills = employee.emp_skills or []
@@ -44,7 +45,7 @@ def calculate_slowdown_factor(employee, task) -> float:
         skill_slowdown = 1.0
     # Если все навыки отсутствуют
     elif missing_count == total_count:
-        return 3.0  # Крайне медленно, не подходит для задачи
+        skill_slowdown = 3.0  # Крайне медленно, не подходит для задачи
 
     # Если часть навыков отсутствует
     elif missing_count > 0:
@@ -53,7 +54,7 @@ def calculate_slowdown_factor(employee, task) -> float:
 
         # Базовый 2.0 + дополнительный за каждый отсутствующий
         additional_penalty = missing_ratio * 1.0
-        return base_penalty + additional_penalty
+        skill_slowdown = base_penalty + additional_penalty
     else:
         # Находим минимальную эффективность по требуемым навыкам
         efficiencies = []
