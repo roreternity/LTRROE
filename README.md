@@ -5,7 +5,7 @@ stochastic project schedule-risk modelling. It combines CPM-style graph scheduli
 Carlo simulation, synthetic data generation, and machine-learning baselines to compare a
 *central* schedule estimate against the *upper tail* of the schedule distribution.
 
-> 🇷🇺 Russian version of this document: [README.ru.md](README.ru.md)
+> Russian version of this document: [README.ru.md](README.ru.md)
 
 ## The idea
 
