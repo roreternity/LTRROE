@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ltrroe"
+version = "0.1.0"
+description = "LTRROE — stochastic project schedule-risk modelling (CPM + Monte Carlo + ML)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "scipy",
+    "scikit-learn",
+    "joblib",
+]
+
+[project.optional-dependencies]
+xgboost = ["xgboost"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["ltrroe*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
